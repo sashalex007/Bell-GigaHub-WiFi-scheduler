@@ -1,6 +1,6 @@
 # Bell Giga Hub Wi-Fi Scheduler
 
-This is an automated Python script that uses Playwright to log into a Bell Giga Hub modem's web administration page and turn the Wi-Fi ON and OFF at scheduled times. The script works by disabling all available Wi-Fi bands. This script should be run on a machine with a direct ethernet connection.
+This is an automated Python script that uses Playwright to log into a Bell Giga Hub modem's web administration page and turn the Wi-Fi ON and OFF at scheduled times. The script works by disabling all available Wi-Fi bands and should only be run on a machine with a direct ethernet connection.
 
 The script is designed to be resilient, automatically retrying failed jobs until they succeed.
 
