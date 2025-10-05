@@ -57,11 +57,16 @@ async def set_wifi_state(state: str):
             await page.get_by_role("button", name="Save").click()
             
             await page.wait_for_timeout(2000) 
-            logging.info(f"Successfully set Wi-Fi state to {state}.")
+            screenshot_path = f"screenshot_success_{state}_{int(time.time())}.png"
+            await page.screenshot(path=screenshot_path)
+            logging.info(f"Successfully set Wi-Fi state to {state}. Screenshot saved to {screenshot_path}")
             return True
             
         except Exception as e:
             logging.error(f"An error occurred during the automation job: {e}")
+            screenshot_path = f"screenshot_error_{state}_{int(time.time())}.png"
+            await page.screenshot(path=screenshot_path)
+            logging.warning(f"A screenshot of the error was saved to {screenshot_path}")
             return False
         finally:
             logging.info("Closing browser.")
