@@ -7,7 +7,7 @@ from playwright.async_api import async_playwright
 # Configure basic logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-async def set_wifi_state(state: str):
+async def set_wifi_state(state: str, test):
     logging.info(f"--- Starting job to set Wi-Fi state to: {state} ---")
     
     try:
@@ -26,7 +26,7 @@ async def set_wifi_state(state: str):
         return
 
     async with async_playwright() as playwright:
-        browser = await playwright.chromium.launch(headless=True)
+        browser = await playwright.chromium.launch(headless=(not test))
         context = await browser.new_context()
         page = await context.new_page()
         page.set_default_timeout(60000) 
@@ -49,12 +49,15 @@ async def set_wifi_state(state: str):
             await page.get_by_role("button", name="Advanced settings").click()
             
             logging.info(f"Clicking buttons to set state to '{state}'...")        
-            await page.get_by_text("ON", exact=True).first.click()
+            await page.get_by_text("ON", exact=True).nth(0).click()
             await page.get_by_text("ON", exact=True).nth(1).click()
             await page.get_by_text("ON", exact=True).nth(2).click()
             
-            logging.info(f"Saving state...")        
-            await page.get_by_role("button", name="Save").click()
+            if not test:
+                logging.info(f"Saving state...")
+                await page.get_by_role("button", name="Save").click()
+            else:
+                await page.pause()
             
             await page.wait_for_timeout(2000) 
             screenshot_path = f"screenshot_success_{state}_{int(time.time())}.png"
@@ -74,10 +77,10 @@ async def set_wifi_state(state: str):
             await browser.close()
             logging.info(f"--- Job finished for state: {state} ---")
 
-def run_job(state: str):
+def run_job(state: str, test=False):
     #retry loop
     while True:
-        success = asyncio.run(set_wifi_state(state))
+        success = asyncio.run(set_wifi_state(state, test))
         if success:
             logging.info(f"Job to set state to '{state}' completed successfully.")
             break # Exit the loop on success
@@ -88,6 +91,8 @@ def run_job(state: str):
 
 def main():
     # --- CONFIGURE YOUR SCHEDULE HERE ---
+    #run_job(state="OFF", test=True) #UNCOMMENT TO TEST
+    
     off_time = "23:00"
     on_time = "03:30"
     schedule.every().day.at(off_time).do(run_job, state="OFF")
