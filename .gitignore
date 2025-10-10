@@ -1,6 +1,9 @@
 # Credentials
 credentials.txt
 
+#screenshots
+*.png
+
 # macOS
 .DS_Store
 
