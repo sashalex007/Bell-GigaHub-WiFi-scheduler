@@ -38,7 +38,7 @@ async def set_wifi_state(state: str, test, headless):
             await page.goto(modem_url)
 
             logging.info("Clicking on 'Manage my Wi-Fi Primary' link...")
-            await page.get_by_role("link", name="Manage my Wi-Fi Primary").click()
+            await page.get_by_role("link", name="Manage Wi-Fi Primary Network").click()
 
             await page.wait_for_timeout(human_delay)
             logging.info("Entering password...")
